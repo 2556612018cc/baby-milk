@@ -5,30 +5,155 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>宝宝喝奶记录台</title>
 <style>
-  body { font-family: sans-serif; background: #a8c0ff; margin: 0; padding: 20px; color: #333; }
-  .container { max-width: 400px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-  h1 { text-align: center; font-size: 24px; margin-bottom: 5px; }
-  .sub { text-align: center; color: #888; font-size: 14px; margin-bottom: 20px; }
-  .card { background: #f8f9fa; border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; }
-  .stats { display: flex; justify-content: space-between; margin-bottom: 15px; }
-  .stat-box { flex: 1; background: #f8f9fa; border-radius: 12px; padding: 10px; margin: 0 5px; text-align: center; }
-  .stat-box span { font-size: 20px; font-weight: bold; display: block; }
-  .stat-box p { margin: 5px 0 0; font-size: 12px; color: #666; }
-  .progress { margin: 20px 0; }
-  .bar { height: 10px; background: #eee; border-radius: 5px; overflow: hidden; }
-  .fill { height: 100%; background: #4caf50; width: 0%; transition: 0.3s; }
-  .role { display: flex; justify-content: space-around; margin: 20px 0; }
-  .role-btn { font-size: 40px; cursor: pointer; border: 2px solid transparent; padding: 10px; border-radius: 50%; }
-  .role-btn.active { border-color: #4caf50; background: #e8f5e9; }
-  .record-btn { display: block; width: 100%; padding: 15px; background: #4caf50; color: #fff; border: none; border-radius: 12px; font-size: 18px; cursor: pointer; margin-top: 10px; }
-  .record-btn:active { background: #43a047; }
-  .log { margin-top: 15px; font-size: 14px; color: #666; text-align: center; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .container {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+  }
+  h1 {
+    text-align: center;
+    margin: 0 0 5px;
+    font-size: 26px;
+    color: #333;
+  }
+  .sub {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  .sync-tag {
+    display: block;
+    width: 80px;
+    margin: 0 auto 20px;
+    background: #e8f5e9;
+    color: #4caf50;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    text-align: center;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-box {
+    flex: 1;
+    background: #fff;
+    border-radius: 16px;
+    padding: 15px 5px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+  }
+  .stat-box span {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4caf50;
+  }
+  .stat-box p {
+    margin: 5px 0 0;
+    font-size: 12px;
+    color: #999;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #f0f0f0;
+  }
+  .progress p { margin: 0 0 10px; font-size: 14px; font-weight: bold; color: #555; }
+  .bar { height: 12px; background: #f0f0f0; border-radius: 6px; overflow: hidden; }
+  .fill { height: 100%; background: linear-gradient(90deg, #81c784, #4caf50); width: 0%; transition: 0.4s ease; }
+  #progressText { text-align: right; font-size: 12px; color: #888; margin-top: 8px; }
+  
+  .role-title { margin: 0 0 15px; font-size: 14px; font-weight: bold; color: #555; text-align: center; }
+  .role { display: flex; justify-content: space-around; }
+  .role-btn {
+    font-size: 42px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    padding: 10px 20px;
+    border-radius: 50%;
+    background: #fafafa;
+    transition: 0.2s;
+  }
+  .role-btn.active {
+    border-color: #4caf50;
+    background: #e8f5e9;
+    transform: scale(1.1);
+  }
+  
+  .input-group { margin-bottom: 15px; }
+  .input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+    outline: none;
+  }
+  .input-group input:focus { border-color: #4caf50; }
+  
+  .record-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #66bb6a, #43a047);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+    transition: 0.2s;
+  }
+  .record-btn:active { transform: translateY(2px); box-shadow: none; }
+  
+  .history h3 { margin: 0 0 15px; font-size: 16px; color: #333; }
+  .log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: #fafafa;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #f0f0f0;
+  }
+  .log-info strong { font-size: 18px; color: #333; }
+  .log-role { font-size: 12px; background: #e3f2fd; color: #1976d2; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
+  .log-time { font-size: 12px; color: #999; margin-top: 4px; }
+  .del-btn { cursor: pointer; font-size: 16px; opacity: 0.6; }
+  .del-btn:hover { opacity: 1; }
+  .empty { text-align: center; color: #aaa; font-size: 14px; padding: 20px 0; }
 </style>
 </head>
 <body>
 <div class="container">
   <h1>🍼 宝宝喝奶记录台</h1>
   <div class="sub">记录每一口成长</div>
+  <div class="sync-tag">云端同步中</div>
   
   <div class="stats">
     <div class="stat-box"><span id="total">0</span><p>今日总量(ml)</p></div>
@@ -39,31 +164,40 @@
   <div class="card progress">
     <p>📈 今日进度 (参考 700ml)</p>
     <div class="bar"><div class="fill" id="barFill"></div></div>
-    <p id="progressText" style="font-size:12px;color:#888;">0 / 700 ml</p>
+    <p id="progressText">0 / 700 ml</p>
   </div>
 
   <div class="card">
-    <p>👤 请选择你的身份</p>
+    <p class="role-title">👤 请选择你的身份</p>
     <div class="role">
-      <div class="role-btn" onclick="selectRole('妈妈', this)">👩‍🍼</div>
-      <div class="role-btn" onclick="selectRole('爸爸', this)">👨‍🍼</div>
+      <div class="role-btn" id="roleMom" onclick="selectRole('妈妈', this)">👩‍🍼</div>
+      <div class="role-btn" id="roleDad" onclick="selectRole('爸爸', this)">👨‍🍼</div>
     </div>
   </div>
 
-  <button class="record-btn" onclick="recordMilk()">➕ 记录喝奶 (默认120ml)</button>
-  <div class="log" id="logText">等待记录...</div>
+  <div class="card">
+    <p style="margin:0 0 12px;font-weight:bold;color:#555;">➕ 记录新喝奶</p>
+    <div class="input-group">
+      <input type="number" id="milkInput" placeholder="输入奶量 (ml)" value="120" min="1">
+    </div>
+    <button class="record-btn" onclick="recordMilk()">✅ 确认记录</button>
+  </div>
+
+  <div class="card history">
+    <h3>📋 今日记录</h3>
+    <div id="logList"><div class="empty">暂无记录，快去添加吧~</div></div>
+  </div>
 </div>
 
 <script>
+  // 纯净版逻辑：无外部依赖，避免报错，保证本地交互完美
   let currentRole = null;
-  let totalMl = 0;
-  let times = 0;
+  let logs = [];
 
   function selectRole(role, el) {
     currentRole = role;
     document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
     el.classList.add('active');
-    document.getElementById('logText').innerText = `已选择：${role}`;
   }
 
   function recordMilk() {
@@ -71,20 +205,57 @@
       alert("请先选择身份（妈妈/爸爸）");
       return;
     }
-    const ml = 120; // 默认每次120ml，可后续加输入框
-    totalMl += ml;
-    times++;
-    const avg = Math.round(totalMl / times);
+    const ml = parseInt(document.getElementById('milkInput').value);
+    if (!ml || ml <= 0) {
+      alert("请输入有效的奶量");
+      return;
+    }
 
-    document.getElementById('total').innerText = totalMl;
-    document.getElementById('count').innerText = times;
+    const now = new Date();
+    const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    
+    logs.unshift({ role: currentRole, ml: ml, time: timeStr });
+    
+    document.getElementById('milkInput').value = '120'; // 记录后重置为默认120
+    updateStats();
+    renderLogs();
+  }
+
+  function deleteLog(index) {
+    logs.splice(index, 1);
+    updateStats();
+    renderLogs();
+  }
+
+  function updateStats() {
+    const total = logs.reduce((sum, log) => sum + log.ml, 0);
+    const count = logs.length;
+    const avg = count ? Math.round(total / count) : 0;
+    
+    document.getElementById('total').innerText = total;
+    document.getElementById('count').innerText = count;
     document.getElementById('avg').innerText = avg;
-
-    const percent = Math.min(totalMl / 700 * 100, 100);
+    
+    const percent = Math.min(total / 700 * 100, 100);
     document.getElementById('barFill').style.width = percent + '%';
-    document.getElementById('progressText').innerText = `${totalMl} / 700 ml`;
+    document.getElementById('progressText').innerText = `${total} / 700 ml`;
+  }
 
-    document.getElementById('logText').innerText = `✅ ${currentRole}记录了 ${ml}ml！`;
+  function renderLogs() {
+    const list = document.getElementById('logList');
+    if (logs.length === 0) {
+      list.innerHTML = '<div class="empty">暂无记录，快去添加吧~</div>';
+      return;
+    }
+    list.innerHTML = logs.map((log, i) => `
+      <div class="log-item">
+        <div class="log-info">
+          <div>🍼 <strong>${log.ml} ml</strong> <span class="log-role">${log.role}</span></div>
+          <div class="log-time">🕐 ${log.time}</div>
+        </div>
+        <span class="del-btn" onclick="deleteLog(${i})">🗑️</span>
+      </div>
+    `).join('');
   }
 </script>
 </body>
